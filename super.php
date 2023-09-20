@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * CREADO POR LU9DCE
+ * Copyright 2023 Eduardo Castillo
+ * Contacto: castilloeduardo@outlook.com.ar
+ * Licencia: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
+ */
+
 $pingresult = exec("ping -4 -n -c 1 8.8.8.8", $outcome, $status);
 if (0 != $status) {
     exit();
@@ -11,7 +18,7 @@ ini_set('language', 'en');
 $ruta = __DIR__;
 $ds = DIRECTORY_SEPARATOR;
 date_default_timezone_set('UTC');
-$offset = -3; 
+$offset = -3;
 $fecha_actual_utc = time();
 $fecha = gmdate("d-My", $fecha_actual_utc + $offset * 60 * 60);
 
@@ -32,7 +39,8 @@ $tmp = $ruta . $ds . 'tmp.txt';
 
 // ---------------------------------------------------------------------------
 
-function down($url) {
+function down($url)
+{
     $ruta = $GLOBALS['ruta'];
     $ds = $GLOBALS['ds'];
     $tmp = $GLOBALS['tmp'];
@@ -48,19 +56,18 @@ function down($url) {
 
 // ---------------------------------------------------------------------------
 
-
 function limpia($string)
 {
     $string = html_entity_decode($string);
-	$string = mb_convert_encoding($string, "HTML-ENTITIES", "UTF-8");
+    $string = mb_convert_encoding($string, "HTML-ENTITIES", "UTF-8");
     $string = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $string);
     $string = str_replace(array('ñ', 'Ñ'), '#', $string);
-	$string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+    $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
     $string = strip_tags($string);
     $string = preg_replace('/\t+/', '', $string);
     $string = preg_replace('/(\n){3,}/', "\n\n", $string);
     $string = preg_replace('/(\n){2,}/', "\n\n", $string);
-	$string = html_entity_decode($string);
+    $string = html_entity_decode($string);
     $string = wordwrap($string, 78, "\n");
     return $string;
 }
@@ -93,7 +100,7 @@ function boletin($a, $b, $eee)
            (  )  / )( \/ _ \(    \ / __)(  __)  (  _ \(  _ \/ ___)
            / (_/\) \/ (\__  )) D (( (__  ) _)    ) _ ( ) _ (\___ \
            \____/\____/(___/(____/ \___)(____)  (____/(____/(____/
-           
+
                 PACKET RADIO STATION - BUENOS AIRES (GF05OM)
                        PHP SCHEDULED NEWSLETTERS (PSN)
                      COPYRIGHT 2023 - EDUARDO A. CASTILLO
@@ -106,7 +113,7 @@ $b
 ";
     $opop = strtoupper($opop);
     file_put_contents($ruta . $ds . 'procesa' . $ds . $eee . ".txt", $opop);
-    unlink ($tmp);
+    unlink($tmp);
 }
 
 // ---------------------------------------------------------------------------
@@ -119,11 +126,11 @@ if (isset($arrFiles[2])) {
     rename($pro . $ds . $arrFiles[2], $tmp);
     $b = file_get_contents($tmp);
     $b .= "
-        
+
 ##############################################
 # Edicion especial - Boletin es hecho a mano #
 ##############################################
-        
+
 ";
     $b = limpia($b);
     boletin($a, $b, "0");
@@ -134,7 +141,7 @@ if (isset($arrFiles[2])) {
 $a = "SB EQUAKE @ WW < LU9DCE\nEARTHQUAKE $fecha";
 down("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.csv");
 $f = fopen($tmp, 'r');
-for ($z = 0; $z < 10; $z ++) {
+for ($z = 0; $z < 10; $z++) {
     $x = fgetcsv($f);
     if (is_array($x)) {
         if (is_numeric($x[4])) {
@@ -203,13 +210,13 @@ down("https://www.ng3k.com/Misc/adxoplain.html");
 $srt = file_get_contents($tmp);
 $array = explode("\n", $srt);
 $c = count($array);
-for ($y = 0; $y < 21; $y ++) {
+for ($y = 0; $y < 21; $y++) {
     unset($array[$y]);
 }
 $new = array_values(array_unique($array));
 $c = count($new);
 $v = $c - 28;
-for ($y = $v; $y < $c; $y ++) {
+for ($y = $v; $y < $c; $y++) {
     unset($new[$y]);
 }
 $str = implode("\n\n", $new);
@@ -239,7 +246,7 @@ boletin($a, $b, "8");
 
 $a = "SB HUMOR @ WW < LU9DCE\nFORTUNE $fecha";
 down("https://api.justyy.workers.dev/api/fortune");
-$b = file_get_contents ($tmp);
+$b = file_get_contents($tmp);
 $replacements = array(
     '\\n' => "\n\r",
     '\\r' => "\n\r",
@@ -256,25 +263,25 @@ boletin($a, $b, "9");
 
 $a = "SB HUMOR @ LUNET < LU9DCE\nCHISTE $fecha";
 down("http://www.holasoyramon.com/chistes/aleatorio/");
-$content = file_get_contents ($tmp);
+$content = file_get_contents($tmp);
 $doc = new DOMDocument();
 libxml_use_internal_errors(true);
 $doc->loadHTML($content);
 libxml_clear_errors();
-    $divElements = $doc->getElementsByTagName('div');
-    foreach ($divElements as $divElement) {
-        if ($divElement->getAttribute('class') === 'grande1') {
-            $divContent = $doc->saveHTML($divElement);
-            $plaintext = strip_tags($divContent);
-            $lines = explode("\n", $plaintext);
-            $filteredLines = array_filter($lines, function($line) {
-                return strpos($line, "Chiste Aleatorio") === false;
-            });
-            $filteredText = implode("\n", $filteredLines);
-            $b = $filteredText;
-            break;
-        }
+$divElements = $doc->getElementsByTagName('div');
+foreach ($divElements as $divElement) {
+    if ($divElement->getAttribute('class') === 'grande1') {
+        $divContent = $doc->saveHTML($divElement);
+        $plaintext = strip_tags($divContent);
+        $lines = explode("\n", $plaintext);
+        $filteredLines = array_filter($lines, function ($line) {
+            return strpos($line, "Chiste Aleatorio") === false;
+        });
+        $filteredText = implode("\n", $filteredLines);
+        $b = $filteredText;
+        break;
     }
+}
 $b = limpia($b);
 boletin($a, $b, "10");
 
@@ -327,4 +334,3 @@ for ($ee = 0; $ee < 36; $ee += 2) {
 }
 
 // ---------------------------------------------------------------------------
-
