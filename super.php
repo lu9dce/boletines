@@ -47,7 +47,10 @@ function down($url)
     $fh = fopen($tmp, "w");
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    $crt = realpath($ruta . $ds . 'curl-ca-bundle.crt');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Seguir redirecciones
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'); // Agente de usuario similar a wget
+    $crt = realpath(__DIR__ . $ds . 'curl-ca-bundle.crt');
     curl_setopt($ch, CURLOPT_CAINFO, $crt);
     curl_setopt($ch, CURLOPT_FILE, $fh);
     curl_exec($ch);
