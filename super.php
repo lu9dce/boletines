@@ -7,7 +7,13 @@
  * Licencia: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
  */
 
-$pingresult = exec("ping -4 -n -c 1 8.8.8.8", $outcome, $status);
+$os = strtoupper(PHP_OS);
+
+if ($os === 'LINUX') {
+    $pingresult = exec("ping -4 -n -c 1 8.8.8.8", $outcome, $status);
+} else {
+    $pingresult = exec("ping -4 -n 1 8.8.8.8", $outcome, $status);
+}
 if (0 != $status) {
     exit();
 }
